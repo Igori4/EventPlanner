@@ -1,0 +1,30 @@
+.event-card {
+  max-width: 300px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background: #ffffff;
+}
+
+.event-card h2,
+.event-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.event-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.event-card label {
+  font-size: 14px;
+  color: #4b5563;
+}
