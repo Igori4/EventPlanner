@@ -1,0 +1,66 @@
+.card {
+  max-width: 320px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background: #ffffff;
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.online {
+  border-color: teal;
+  box-shadow: 0 1px 3px rgba(0, 128, 128, 0.25);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e6fffa;
+  color: teal;
+}
+
+.icon {
+  color: teal;
+  margin-right: 4px;
+  vertical-align: -4px;
+}
+
+.going {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.actions {
+  margin-top: 12px;
+}
+
+.description {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4b5563;
+}
