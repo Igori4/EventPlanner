@@ -1,16 +1,9 @@
 import { useState } from 'react';
 import EventCard from './components/event-card/EventCard';
+import Button from './components/button/Button';
+import AddEventForm from './components/add-event-form/AddEventForm';
 import css from './App.module.css';
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  isOnline: boolean;
-  description: string;
-  going: boolean;
-}
+import type { Event, DraftEvent } from './types/event';
 
 const initialEvents: Event[] = [
   {
@@ -41,15 +34,29 @@ const initialEvents: Event[] = [
     isOnline: false,
     description:
       'Найбільша фронтенд-конференція року: три сцени, воркшопи та афтепаті для учасників.',
-    going: true,
+    going: false,
   },
 ];
 
 export default function App() {
   const [events, setEvents] = useState<Event[]>(initialEvents);
+  // Другий, повністю незалежний стан
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleToggleGoing = (id: string) => {
     setEvents(events.map((event) => (event.id === id ? { ...event, going: !event.going } : event)));
+  };
+
+  const handleAddEvent = (draft: DraftEvent) => {
+    const newEvent: Event = {
+      ...draft,
+      id: crypto.randomUUID(),
+      isOnline: draft.location.toLowerCase() === 'online',
+      going: false,
+    };
+
+    setEvents([newEvent, ...events]);
+    setIsFormOpen(false);
   };
 
   const goingCount = events.filter((event) => event.going).length;
@@ -57,9 +64,20 @@ export default function App() {
   return (
     <>
       <h1>Найближчі події</h1>
-      <p>
-        Йдете на {goingCount} з {events.length} подій
-      </p>
+
+      <div className={css.toolbar}>
+        <p>
+          Йдете на {goingCount} з {events.length} подій
+        </p>
+        <Button
+          variant="primary"
+          text={isFormOpen ? 'Сховати форму' : '+ Додати подію'}
+          onClick={() => setIsFormOpen(!isFormOpen)}
+        />
+      </div>
+
+      {isFormOpen && <AddEventForm onAdd={handleAddEvent} />}
+
       <div className={css.cards}>
         {events.map((event) => (
           <EventCard key={event.id} event={event} onToggleGoing={handleToggleGoing} />

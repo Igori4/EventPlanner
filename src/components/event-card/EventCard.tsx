@@ -3,16 +3,7 @@ import clsx from 'clsx';
 import css from './EventCard.module.css';
 import Button from '../button/Button';
 import { HiCalendar, HiLocationMarker } from 'react-icons/hi';
-
-export interface Event {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  isOnline: boolean;
-  description: string;
-  going: boolean;
-}
+import type { Event } from '../../types/event';
 
 interface EventCardProps {
   event: Event;
@@ -20,7 +11,6 @@ interface EventCardProps {
 }
 
 export default function EventCard({ event, onToggleGoing }: EventCardProps) {
-  // isExpanded лишається ЛОКАЛЬНИМ — він потрібен лише цій картці
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (

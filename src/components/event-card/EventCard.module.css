@@ -54,6 +54,10 @@
   cursor: pointer;
 }
 
+.goingInput {
+  display: none;
+}
+
 .actions {
   margin-top: 12px;
 }
