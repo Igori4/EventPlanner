@@ -2,46 +2,29 @@ import { useState } from 'react';
 import EventCard from './components/event-card/EventCard';
 import Button from './components/button/Button';
 import AddEventForm from './components/add-event-form/AddEventForm';
+import EventSearchForm from './components/event-search-form/EventSearchForm';
 import css from './App.module.css';
+import { fetchEvents } from './services/eventService';
 import type { Event, DraftEvent } from './types/event';
 
-const initialEvents: Event[] = [
-  {
-    id: 'id-1',
-    title: 'React Meetup Lviv',
-    date: '01.08.2026',
-    location: 'Львів, Дорошенка 55',
-    isOnline: false,
-    description:
-      'Щомісячна зустріч React-спільноти Львова: доповіді, нетворкінг і піца. Цього разу говоримо про Server Components.',
-    going: false,
-  },
-  {
-    id: 'id-2',
-    title: 'TypeScript Workshop',
-    date: '15.08.2026',
-    location: 'Online',
-    isOnline: true,
-    description:
-      'Практичний воркшоп із просунутих типів TypeScript для React-розробників. Дженерики, utility types, type guards.',
-    going: false,
-  },
-  {
-    id: 'id-3',
-    title: 'Frontend Conf Kyiv',
-    date: '20.09.2026',
-    location: 'Київ, НСК Олімпійський',
-    isOnline: false,
-    description:
-      'Найбільша фронтенд-конференція року: три сцени, воркшопи та афтепаті для учасників.',
-    going: false,
-  },
-];
-
 export default function App() {
-  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [events, setEvents] = useState<Event[]>([]);
   // Другий, повністю незалежний стан
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const handleSearch = async (title: string) => {
+    setIsLoading(true);
+    setIsError(false);
+    try {
+      const data = await fetchEvents(title);
+      setEvents(data);
+    } catch {
+      setIsError(true);
+    }
+    setIsLoading(false);
+  };
 
   const handleToggleGoing = (id: string) => {
     setEvents(events.map((event) => (event.id === id ? { ...event, going: !event.going } : event)));
@@ -65,6 +48,8 @@ export default function App() {
     <>
       <h1>Найближчі події</h1>
 
+      <EventSearchForm onSearch={handleSearch} />
+
       <div className={css.toolbar}>
         <p>
           Йдете на {goingCount} з {events.length} подій
@@ -77,6 +62,9 @@ export default function App() {
       </div>
 
       {isFormOpen && <AddEventForm onAdd={handleAddEvent} />}
+
+      {isLoading && <p>Завантажуємо події, зачекайте…</p>}
+      {isError && <p>Ой, щось пішло не так! Спробуйте ще раз.</p>}
 
       <div className={css.cards}>
         {events.map((event) => (
