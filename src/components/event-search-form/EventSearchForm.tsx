@@ -1,26 +1,32 @@
 import Button from '../button/Button';
+import { HiSearch } from 'react-icons/hi';
 import css from './EventSearchForm.module.css';
 
 interface EventSearchFormProps {
+  initialTopic: string;
   onSearch: (title: string) => void;
 }
 
-export default function EventSearchForm({ onSearch }: EventSearchFormProps) {
+export default function EventSearchForm({ initialTopic, onSearch }: EventSearchFormProps) {
   const handleSubmit = (formData: FormData) => {
     const title = formData.get('title') as string;
-
-    if (title.trim() === '') {
-      alert('Введіть пошуковий запит!');
-      return;
-    }
 
     onSearch(title);
   };
 
   return (
     <form className={css.form} action={handleSubmit}>
-      <input type="text" name="title" placeholder="Пошук подій…" />
-      <Button variant="primary" text="Знайти" />
+      <label className={css.inputWrap}>
+        <span className={css.visuallyHidden}>Пошук подій за назвою</span>
+        <HiSearch className={css.searchIcon} aria-hidden="true" />
+        <input
+          type="search"
+          name="title"
+          defaultValue={initialTopic}
+          placeholder="Знайти подію за назвою…"
+        />
+      </label>
+      <Button variant="primary" text="Знайти подію" />
     </form>
   );
 }
