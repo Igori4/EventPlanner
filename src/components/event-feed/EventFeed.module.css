@@ -1,0 +1,65 @@
+.feed {
+  max-width: 480px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.item + .item {
+  margin-top: 8px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.meta {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.more {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 1px solid teal;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  color: teal;
+  cursor: pointer;
+}
+
+.more:hover:not(:disabled) {
+  background: #e6fffa;
+}
+
+.more:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.status {
+  margin: 16px 0;
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+}

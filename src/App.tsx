@@ -5,50 +5,58 @@ import AddEventForm from './components/add-event-form/AddEventForm';
 import EventSearchForm from './components/event-search-form/EventSearchForm';
 import Modal from './components/modal/Modal';
 import css from './App.module.css';
-import { fetchEvents } from './services/eventService';
+import { fetchEvents, fetchEventsByLocation } from './services/eventService';
 import type { Event, DraftEvent } from './types/event';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import SimilarEvents from './components/similar-events/SimilarEvents';
+import Pagination from './components/pagination/Pagination';
 
 const TOPIC_STORAGE_KEY = 'event-planner-topic';
 
 export default function App() {
-  const [events, setEvents] = useState<Event[]>([]);
   const [topic, setTopic] = useState(() => {
-    const saved = localStorage.getItem(TOPIC_STORAGE_KEY);
+    const saved = window.localStorage.getItem(TOPIC_STORAGE_KEY);
     return saved !== null ? (JSON.parse(saved) as string) : '';
   });
+  const [currentPage, setCurrentPage] = useState(1);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
   const [pendingEvent, setPendingEvent] = useState<Event | null>(null);
+  const [goingIds, setGoingIds] = useState<string[]>([]);
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['events', topic, currentPage],
+    queryFn: () => fetchEvents(topic, currentPage),
+    placeholderData: keepPreviousData,
+  });
+
+  const pendingLocation = pendingEvent?.location ?? '';
+
+  const { data: similarEvents, isLoading: isSimilarLoading } = useQuery({
+    queryKey: ['events', 'byLocation', pendingLocation],
+    queryFn: () => fetchEventsByLocation(pendingLocation),
+    enabled: pendingEvent !== null,
+  });
 
   useEffect(() => {
-    async function loadEvents() {
-      try {
-        setIsLoading(true);
-        setIsError(false);
-
-        const data = await fetchEvents(topic);
-        setEvents(data);
-      } catch {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadEvents();
+    localStorage.setItem('event-planner-topic', JSON.stringify(topic));
   }, [topic]);
 
-  useEffect(() => {
-    localStorage.setItem(TOPIC_STORAGE_KEY, JSON.stringify(topic));
-  }, [topic]);
+  const totalPages = data?.totalPages ?? 0;
+
+  const events: Event[] = (data?.events ?? []).map((event) => ({
+    ...event,
+    going: goingIds.includes(event.id),
+  }));
 
   const handleSearch = (nextTopic: string) => {
     setTopic(nextTopic);
+    setCurrentPage(1);
   };
 
   const handleToggleGoing = (id: string) => {
-    setEvents(events.map((event) => (event.id === id ? { ...event, going: !event.going } : event)));
+    setGoingIds(
+      goingIds.includes(id) ? goingIds.filter((goingId) => goingId !== id) : [...goingIds, id],
+    );
   };
 
   const handleConfirmToggle = () => {
@@ -59,14 +67,9 @@ export default function App() {
   };
 
   const handleAddEvent = (draft: DraftEvent) => {
-    const newEvent: Event = {
-      ...draft,
-      id: crypto.randomUUID(),
-      isOnline: draft.location.toLowerCase() === 'online',
-      going: false,
-    };
-
-    setEvents([newEvent, ...events]);
+    // ⚠️ Тимчасово. Список тепер належить серверу, тож нову подію треба
+    // відправити на бекенд POST-запитом — це мутація, тема заняття 7.
+    console.log('Нова подія:', draft);
     setIsFormOpen(false);
   };
 
@@ -79,13 +82,9 @@ export default function App() {
       <EventSearchForm initialTopic={topic} onSearch={handleSearch} />
 
       <div className={css.toolbar}>
-        <div className={css.attendance} aria-live="polite">
-          <span className={css.attendanceCount}>{goingCount}</span>
-          <span className={css.attendanceText}>
-            <strong>Ви йдете</strong>
-            <small>на {goingCount} з {events.length} подій</small>
-          </span>
-        </div>
+        <p>
+          Йдете на {goingCount} з {events.length} подій
+        </p>
         <Button
           variant="primary"
           text={isFormOpen ? 'Сховати форму' : '+ Додати подію'}
@@ -93,10 +92,18 @@ export default function App() {
         />
       </div>
 
-      {isFormOpen && <AddEventForm onAdd={handleAddEvent} />}
+      {isFormOpen && (
+        <>
+          <AddEventForm onAdd={handleAddEvent} />
+          <p className={css.notice}>
+            Створення події поки не зберігається на сервері — для цього потрібна мутація. Це тема
+            заняття 7.
+          </p>
+        </>
+      )}
 
       {isLoading && <p>Завантажуємо події, зачекайте…</p>}
-      {isError && <p>Ой, щось пішло не так! Спробуйте ще раз.</p>}
+      {isError && <p>Ой, щось пішло не так: {error.message}</p>}
 
       {events.length > 0 && (
         <div className={css.cards}>
@@ -106,10 +113,25 @@ export default function App() {
         </div>
       )}
 
+      {totalPages > 1 && (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
+      )}
+
       {pendingEvent && (
         <Modal onClose={() => setPendingEvent(null)}>
           <h2>{pendingEvent.going ? 'Скасувати участь?' : 'Підтвердити участь?'}</h2>
           <p>{pendingEvent.title}</p>
+
+          <SimilarEvents
+            events={similarEvents ?? []}
+            isLoading={isSimilarLoading}
+            currentId={pendingEvent.id}
+          />
+
           <div className={css.modalActions}>
             <Button variant="secondary" text="Скасувати" onClick={() => setPendingEvent(null)} />
             <Button

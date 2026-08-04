@@ -1,0 +1,42 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin: 24px 0 8px;
+  padding: 0;
+  list-style: none;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.pagination li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pagination li a:hover {
+  border-color: teal;
+  color: teal;
+}
+
+.active a {
+  background: teal;
+  border-color: teal !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.pagination li.disabled a {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
