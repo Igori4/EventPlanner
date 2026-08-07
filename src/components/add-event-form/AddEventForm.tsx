@@ -23,11 +23,16 @@ const AddEventSchema = Yup.object().shape({
     .max(80, 'Назва занадто довга')
     .required('Вкажіть назву події'),
   date: Yup.string()
-    .datetime({ message: 'Формат дати: 01.08.2026', format: 'DD.MM.YYYY', precision: 'day' })
+    .matches(/^\d{2}\.\d{2}\.\d{4}$/, 'Формат дати: 01.08.2026')
     .required('Вкажіть дату'),
   category: Yup.string().required('Оберіть тип події'),
   description: Yup.string().max(500, 'Опис занадто довгий'),
-  location: Yup.string().min(2, 'Занадто коротка назва місця').required('Вкажіть місце проведення'),
+  location: Yup.string().when('isOnline', {
+    is: false,
+    then: (schema) =>
+      schema.min(2, 'Занадто коротка назва місця').required('Вкажіть місце проведення'),
+    otherwise: (schema) => schema.min(2, 'Занадто коротка назва місця'),
+  }),
   isOnline: Yup.boolean(),
   level: Yup.string().required('Оберіть рівень'),
   tags: Yup.array().min(1, 'Оберіть хоча б одну тему'),
@@ -100,17 +105,17 @@ export default function AddEventForm({ onAdd }: AddEventFormProps) {
         <fieldset className={css.fieldset}>
           <legend className={css.legend}>Де і для кого</legend>
 
-          <label className={css.label} htmlFor={`${fieldId}-location`}>
-            Місце проведення
-          </label>
-          <Field className={css.field} type="text" name="location" id={`${fieldId}-location`} />
-          <ErrorMessage name="location" component="span" className={css.error} />
-
           {/* Одиничний чекбокс: Formik зберігає true/false */}
           <label className={css.checkboxLabel}>
             <Field type="checkbox" name="isOnline" />
             Онлайн-подія
           </label>
+
+          <label className={css.label} htmlFor={`${fieldId}-location`}>
+            Місце проведення
+          </label>
+          <Field className={css.field} type="text" name="location" id={`${fieldId}-location`} />
+          <ErrorMessage name="location" component="span" className={css.error} />
 
           {/* Радіокнопки: однаковий name, різні value */}
           <span className={css.label}>Рівень</span>
