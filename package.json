@@ -14,11 +14,13 @@
     "@tanstack/react-query-devtools": "^5.101.4",
     "axios": "^1.18.1",
     "clsx": "^2.1.1",
+    "formik": "^2.4.9",
     "modern-normalize": "^3.0.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-icons": "^5.7.0",
-    "react-paginate": "^8.3.0"
+    "react-paginate": "^8.3.0",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -26,7 +26,7 @@ export default function EventSearchForm({ initialTopic, onSearch }: EventSearchF
           placeholder="Знайти подію за назвою…"
         />
       </label>
-      <Button variant="primary" text="Знайти подію" />
+      <Button variant="primary" text="Знайти подію" type="submit" />
     </form>
   );
 }

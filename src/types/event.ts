@@ -6,6 +6,9 @@ export interface Event {
   isOnline: boolean;
   description: string;
   going: boolean;
+  category: string;
+  level: string;
+  tags: string[];
 }
 
 export interface DraftEvent {
@@ -13,4 +16,8 @@ export interface DraftEvent {
   date: string;
   location: string;
   description: string;
+  isOnline: boolean;
+  category: string;
+  level: string;
+  tags: string[];
 }
